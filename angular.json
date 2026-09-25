@@ -51,5 +51,8 @@
       }
     }
   },
-  "defaultProject": "mini-fineract-web"
+  "defaultProject": "mini-fineract-web",
+  "cli": {
+    "analytics": "cec9d0c7-4971-4a41-be98-90912dc9b994"
+  }
 }

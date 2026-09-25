@@ -2,13 +2,12 @@
 import { Component } from '@angular/core';
 
 /**
- * Root shell — same role as web-app AppComponent (simplified).
+ * Root shell — only hosts {@code router-outlet}.
+ * No global header: each feature page owns its own layout (login is full-screen).
  */
 @Component({
   selector: 'mifosx-web-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'Mini Fineract Training';
-}
+export class AppComponent {}

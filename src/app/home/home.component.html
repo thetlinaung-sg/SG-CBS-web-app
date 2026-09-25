@@ -1,17 +1,64 @@
-<div class="container">
-  <div class="welcome-card">
-    <h1 class="title">{{ welcomeTitle }}!</h1>
-    <p class="subtitle">
-      Mini Fineract training UI — folder layout matches
-      <code>web-app/src/app/home</code>.
-    </p>
-    <p class="status">
-      Backend health: <strong>{{ apiStatus }}</strong>
-    </p>
-    <p class="hint">
-      Next steps for the team: add feature folders under
-      <code>src/app/</code> (e.g. <code>clients/</code>, <code>products/</code>,
-      <code>accounts/</code>) the same way Mifos web-app organizes modules.
-    </p>
+<div class="home-page">
+  <div class="toolbar">
+    <div class="toolbar-spacer"></div>
+    <button type="button" class="btn-primary" (click)="logout()">
+      Sign out
+    </button>
+  </div>
+
+  <div class="container">
+    <section class="welcome-card">
+      <header class="card-header">
+        <h1 class="title">Welcome, {{ username }}!</h1>
+      </header>
+
+      <div class="card-content">
+        <label class="search-field">
+          <span class="search-label">Search Activity</span>
+          <input
+            type="search"
+            [formControl]="searchText"
+            placeholder="Search Activity"
+            autocomplete="off"
+          />
+        </label>
+
+        <div class="table-wrap" *ngIf="filteredActivities | async as matches">
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th scope="col">Activity</th>
+                <th scope="col">Path</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let activity of matches">
+                <td>{{ activity.activity }}</td>
+                <td class="path">{{ activity.path }}</td>
+                <td>
+                  <button type="button" class="btn-link" (click)="goToActivity(activity.path)">
+                    Open
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="matches.length === 0">
+                <td class="empty" colspan="3">No matching activity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="api-hint">Backend health: <strong>{{ apiStatus }}</strong></p>
+      </div>
+
+      <div class="card-brand" aria-hidden="true">
+        <div class="brand-mark">MF</div>
+        <div class="brand-text">
+          <strong>Mini Fineract</strong>
+          <span>Training home — same layout idea as MifosX</span>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

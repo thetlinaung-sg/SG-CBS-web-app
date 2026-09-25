@@ -1,12 +1,18 @@
 /******************************************************************/
-/*  Global styles — keep light; feature styles live in components */
+/*  Global styles — feature pages own their layout                */
 /******************************************************************/
 
 html,
 body {
   height: 100%;
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  background: #f5f7fa;
+  font-family: "Karla", "Segoe UI", sans-serif;
+  background: #0b1814;
   color: #1f2a37;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }

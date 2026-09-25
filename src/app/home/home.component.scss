@@ -1,33 +1,237 @@
-.container {
+/* Mirrors web-app home: top action row + centered welcome card + activity search */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f0f2f4;
+  color: #1f2a37;
+  font-family: "Karla", "Segoe UI", sans-serif;
+}
+
+.home-page {
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+.toolbar {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 37rem;
+  margin: 0 auto 1.25rem;
+  gap: 0.75rem;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.btn-primary {
+  border: none;
+  border-radius: 4px;
+  padding: 0.55rem 1.1rem;
+  background: #2f6d5f;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(15, 41, 66, 0.18);
+}
+
+.btn-primary:hover {
+  background: #1e4a42;
+}
+
+.container {
+  max-width: 37rem;
+  margin: 0 auto;
 }
 
 .welcome-card {
-  width: 100%;
-  max-width: 640px;
   background: #fff;
-  border: 1px solid #d7dee8;
-  border-radius: 12px;
-  padding: 1.5rem 1.75rem;
-  box-shadow: 0 8px 24px rgba(15, 41, 66, 0.06);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(15, 41, 66, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.1rem 1.35rem 0.35rem;
 }
 
 .title {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #212121;
 }
 
-.subtitle,
-.status,
-.hint {
-  color: #526277;
-  line-height: 1.5;
+.card-content {
+  padding: 0.5rem 1.35rem 1rem;
 }
 
-code {
-  background: #eef3f8;
-  padding: 0.1rem 0.35rem;
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.search-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7785;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.search-field input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #c5cdd6;
+  border-radius: 0;
+  padding: 0.55rem 0;
+  font: inherit;
+  font-size: 1rem;
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
+.search-field input:focus {
+  border-bottom-color: #2f6d5f;
+  border-bottom-width: 2px;
+  padding-bottom: calc(0.55rem - 1px);
+}
+
+.table-wrap {
+  margin-top: 0.75rem;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid #e4e8ee;
   border-radius: 4px;
-  font-size: 0.9em;
+}
+
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.activity-table th,
+.activity-table td {
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid #eef1f4;
+  vertical-align: middle;
+}
+
+.activity-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f5f7f9;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7785;
+  border-bottom: 1px solid #dde3ea;
+}
+
+.activity-table tbody tr:hover {
+  background: rgba(47, 109, 95, 0.06);
+}
+
+.activity-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.activity-table .path {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.85rem;
+  color: #526277;
+}
+
+.btn-link {
+  border: 1px solid #2f6d5f;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  background: #fff;
+  color: #2f6d5f;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  background: #2f6d5f;
+  color: #fff;
+}
+
+.empty {
+  padding: 0.9rem;
+  color: #6b7785;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.api-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7785;
+}
+
+.api-hint strong {
+  color: #2f6d5f;
+}
+
+.card-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.25rem 1.35rem 1.4rem;
+  background: linear-gradient(135deg, #0b1814 0%, #16352c 55%, #1a2a32 100%);
+  color: #f7f2e8;
+}
+
+.brand-mark {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(91, 201, 133, 0.2);
+  border: 1px solid rgba(91, 201, 133, 0.45);
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #5bc985;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.brand-text strong {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.brand-text span {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 1.1rem;
+  }
 }

@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 /**
- * App routing — mirrors web-app style: default route goes to home.
- * Team: add feature routes here (or as lazy-loaded modules) step by step.
+ * App routing — default entry is home when signed in (AuthGuard sends guests to login).
+ * {@code **} stays last (this module is imported after feature modules).
  */
 const routes: Routes = [
   {
