@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: #f0f2f4;
   color: #1f2a37;
-  font-family: "Karla", "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 .page {
@@ -21,13 +21,26 @@
 }
 
 .back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid #cbded5;
+  border-radius: 7px;
+  background: #fff;
   color: #2f6d5f;
+  font: inherit;
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .back:hover {
-  text-decoration: underline;
+  border-color: #9bbdad;
+  background: #edf6f1;
+  color: #245a4a;
 }
 
 .btn-primary {

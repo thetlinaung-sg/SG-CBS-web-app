@@ -6,9 +6,19 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family: "Karla", "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
   background: #0b1814;
   color: #1f2a37;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 *,

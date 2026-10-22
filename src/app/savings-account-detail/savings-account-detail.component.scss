@@ -3,7 +3,10 @@
     min-height: 100vh;
     background: #f0f2f4;
     color: #1f2a37;
-    font-family: "Karla", "Segoe UI", sans-serif;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 
     --ink: #19332f;
     --muted: #687975;
@@ -136,7 +139,9 @@
     color: var(--ink);
 
     font-size: 1.55rem;
+    line-height: 1.4;
     font-weight: 700;
+    letter-spacing: -0.35px;
 }
 
 
@@ -251,7 +256,9 @@
     color: var(--ink);
 
     font-size: 1.05rem;
+    line-height: 1.4;
     font-weight: 700;
+    letter-spacing: -0.2px;
 }
 
 
@@ -1303,6 +1310,13 @@
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.75rem;
+}
+
+.standing-instructions-heading-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .standing-instructions-heading h3 {
@@ -2804,6 +2818,10 @@
 
     .standing-instructions-heading {
         flex-direction: column;
+    }
+
+    .standing-instructions-heading-actions {
+        flex-wrap: wrap;
     }
 
     .standing-instruction-form {

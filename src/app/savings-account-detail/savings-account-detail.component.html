@@ -1030,11 +1030,17 @@
                         <h3>Standing Instructions</h3>
                         <p>Create recurring transfers to another ACTIVE account for this client.</p>
                     </div>
-                    <button type="button" class="action-button transfer-submit"
-                        [disabled]="standingInstructionProcessing"
-                        (click)="runDueStandingInstructions()">
-                        {{ standingInstructionProcessing ? 'Running...' : 'Run Due Instructions (Today)' }}
-                    </button>
+                    <div class="standing-instructions-heading-actions">
+                        <button type="submit" form="standing-instruction-form" class="action-button transfer-submit"
+                            [disabled]="standingInstructionProcessing || transferAccounts.length === 0">
+                            Create Standing Instruction
+                        </button>
+                        <button type="button" class="action-button transfer-submit"
+                            [disabled]="standingInstructionProcessing"
+                            (click)="runDueStandingInstructions()">
+                            {{ standingInstructionProcessing ? 'Running...' : 'Run Due Instructions (Today)' }}
+                        </button>
+                    </div>
                 </div>
 
                 <div class="standing-instruction-message error" *ngIf="standingInstructionErrorMessage">
@@ -1045,7 +1051,7 @@
                     {{ standingInstructionSuccessMessage }}
                 </div>
 
-                <form class="standing-instruction-form" *ngIf="account.status === 'ACTIVE'"
+                <form id="standing-instruction-form" class="standing-instruction-form" *ngIf="account.status === 'ACTIVE'"
                     (ngSubmit)="createStandingInstruction()">
                     <div>
                         <label for="standingInstructionDestination">To account</label>
@@ -1096,10 +1102,6 @@
                             [max]="standingInstructionValidTo || null"
                             [disabled]="standingInstructionProcessing">
                     </div>
-                    <button type="submit" class="action-button transfer-submit"
-                        [disabled]="standingInstructionProcessing || transferAccounts.length === 0">
-                        Create Standing Instruction
-                    </button>
                 </form>
 
                 <p class="standing-instruction-empty" *ngIf="account.status !== 'ACTIVE'">
