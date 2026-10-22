@@ -1,0 +1,180 @@
+<div class="page">
+
+    <div class="toolbar">
+
+        <button type="button" class="back" (click)="goBack()">
+            ← Home
+        </button>
+
+        <button type="button" class="btn-primary" (click)="createAccount()">
+            + Create Account
+        </button>
+
+    </div>
+
+    <section class="panel">
+
+        <header class="panel-header">
+            <div>
+                <h1 class="title">
+                    Savings Accounts
+                </h1>
+                <p class="lede">
+                    Search and manage savings accounts.
+                </p>
+            </div>
+            <div class="count-badge">
+                {{ totalElements }} Accounts
+            </div>
+        </header>
+
+        <p class="loading" *ngIf="loading">
+            Loading savings accounts...
+        </p>
+
+        <p class="error" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </p>
+
+        <div class="filter-panel" *ngIf="!errorMessage">
+            <label class="filter-field search-field">
+                <span>Filter</span>
+                <input
+                    type="search"
+                    placeholder="Search by account no or client name"
+                    [(ngModel)]="searchText"
+                    (keyup.enter)="applyFilters()">
+            </label>
+
+            <label class="filter-field client-field">
+                <span>Client id</span>
+                <input
+                    type="text"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="e.g. 1"
+                    [(ngModel)]="clientIdText"
+                    (keyup.enter)="applyFilters()">
+            </label>
+
+            <label class="filter-field status-field">
+                <span>Status</span>
+                <select [(ngModel)]="statusFilter">
+                    <option value="">All</option>
+                    <option value="SUBMITTED">Submitted</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="FROZEN">Frozen</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </label>
+
+            <div class="filter-actions">
+                <button type="button" class="btn-filter" (click)="applyFilters()">Filter</button>
+                <button type="button" class="btn-clear" (click)="clearFilters()">Clear</button>
+            </div>
+        </div>
+
+        <div class="table-wrap" *ngIf="!loading && !errorMessage">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>
+                            <button type="button" class="sort-button" (click)="changeSort('id')">
+                                ID <span>{{ sortIndicator('id') }}</span>
+                            </button>
+                        </th>
+                        <th>
+                            <button type="button" class="sort-button" (click)="changeSort('accountNo')">
+                                Account No. <span>{{ sortIndicator('accountNo') }}</span>
+                            </button>
+                        </th>
+                        <th>Client</th>
+                        <th>Product</th>
+                        <th>Status</th>
+                        <th>
+                            <button type="button" class="sort-button" (click)="changeSort('balance')">
+                                Balance <span>{{ sortIndicator('balance') }}</span>
+                            </button>
+                        </th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let account of accounts">
+
+                        <td>{{ account.id }}</td>
+
+                        <td>
+                            {{ account.accountNo }}
+                        </td>
+
+                        <td>
+                            {{ getClientName(account.clientId) }}
+                        </td>
+
+                        <td>
+                            {{ getProductName(account.productId) }}
+                        </td>
+
+                        <td>
+                            <span class="status" [class.submitted]="account.status === 'SUBMITTED'"
+                                [class.approved]="account.status === 'APPROVED'"
+                                [class.active]="account.status === 'ACTIVE'"
+                                [class.closed]="account.status === 'CLOSED'"
+                                [class.frozen]="account.status === 'FROZEN'">
+                                {{ account.status }}
+                            </span>
+                        </td>
+
+                        <td>{{ account.balance | number:'1.0-2' }}</td>
+
+                        <td>{{ getAvailableBalance(account) | number:'1.0-2' }}</td>
+
+                        <td>
+                            <button type="button" class="btn-view" (click)="viewAccount(account.id)">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="accounts.length === 0">
+                        <td class="empty" colspan="8">No savings accounts found.</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <footer class="pagination" *ngIf="!loading && !errorMessage">
+            <div class="page-size">
+                <label for="page-size">Items per page:</label>
+                <select id="page-size" [value]="pageSize" (change)="changePageSize($any($event.target).value)">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+            <span class="page-summary">
+                {{ firstItem }}–{{ lastItem }} of {{ totalElements }}
+            </span>
+            <span class="page-count">
+                Page {{ totalPages === 0 ? 0 : page + 1 }} of {{ totalPages }}
+            </span>
+            <div class="page-controls">
+                <button type="button" aria-label="First page" [disabled]="page === 0" (click)="changePage(0)">|‹</button>
+                <button type="button" aria-label="Previous page" [disabled]="page === 0" (click)="changePage(page - 1)">‹</button>
+                <button type="button" aria-label="Next page" [disabled]="totalPages === 0 || page >= totalPages - 1" (click)="changePage(page + 1)">›</button>
+                <button type="button" aria-label="Last page" [disabled]="totalPages === 0 || page >= totalPages - 1" (click)="changePage(totalPages - 1)">›|</button>
+            </div>
+        </footer>
+
+    </section>
+
+</div>

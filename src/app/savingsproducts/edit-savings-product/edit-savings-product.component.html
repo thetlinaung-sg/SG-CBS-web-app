@@ -1,0 +1,135 @@
+<div class="page">
+  <div class="toolbar">
+    <button type="button" class="back" (click)="cancel()">← Savings Products</button>
+  </div>
+
+  <section class="panel">
+    <header class="panel-header">
+      <h1 class="title">Edit savings product</h1>
+      <p class="lede">Update the savings product information.</p>
+    </header>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="loading" *ngIf="loadingProduct">Loading savings product...</p>
+
+    <form class="form" *ngIf="!loadingProduct" [formGroup]="productForm" (ngSubmit)="update()" novalidate>
+      <p class="section-label">Product details</p>
+      <div class="field-grid">
+        <label class="field">
+          <span>Product name</span>
+          <input type="text" formControlName="name" placeholder="e.g. Regular Savings"
+            [class.invalid]="productForm.controls.name.invalid && productForm.controls.name.touched" />
+          <p class="field-error" *ngIf="productForm.controls.name.invalid && productForm.controls.name.touched">
+            Product name is required.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Short name</span>
+          <input type="text" formControlName="shortName" placeholder="e.g. REG"
+            [class.invalid]="productForm.controls.shortName.invalid && productForm.controls.shortName.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.shortName.invalid && productForm.controls.shortName.touched">
+            Short name is required.
+          </p>
+        </label>
+
+        <label class="field field-wide">
+          <span>Description <em>(optional)</em></span>
+          <textarea formControlName="description" rows="3" placeholder="Enter product description"></textarea>
+        </label>
+      </div>
+
+      <p class="section-label">Terms and conditions</p>
+      <div class="field-grid">
+        <label class="field">
+          <span>Currency</span>
+          <select formControlName="currencyCode">
+            <option value="MMK">MMK</option>
+            <option value="USD">USD</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Annual interest rate (%)</span>
+          <input type="number" formControlName="nominalAnnualInterestRate" min="0" step="0.01"
+            [class.invalid]="productForm.controls.nominalAnnualInterestRate.invalid && productForm.controls.nominalAnnualInterestRate.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.nominalAnnualInterestRate.invalid && productForm.controls.nominalAnnualInterestRate.touched">
+            Enter a rate of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Minimum opening balance</span>
+          <input type="number" formControlName="minOpeningBalance" min="0" step="0.01"
+            [class.invalid]="productForm.controls.minOpeningBalance.invalid && productForm.controls.minOpeningBalance.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.minOpeningBalance.invalid && productForm.controls.minOpeningBalance.touched">
+            Enter an amount of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Minimum required balance</span>
+          <input type="number" formControlName="minRequiredBalance" min="0" step="0.01"
+            [class.invalid]="productForm.controls.minRequiredBalance.invalid && productForm.controls.minRequiredBalance.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.minRequiredBalance.invalid && productForm.controls.minRequiredBalance.touched">
+            Enter an amount of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Lock-in period</span>
+          <input type="number" formControlName="lockinPeriod" min="0"
+            [class.invalid]="productForm.controls.lockinPeriod.invalid && productForm.controls.lockinPeriod.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.lockinPeriod.invalid && productForm.controls.lockinPeriod.touched">
+            Enter a period of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Lock-in period type</span>
+          <select formControlName="lockinPeriodType">
+            <option value="DAYS">Days</option>
+            <option value="WEEKS">Weeks</option>
+            <option value="MONTHS">Months</option>
+            <option value="YEARS">Years</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Withdrawal fee</span>
+
+          <input type="number" formControlName="withdrawalFeeAmount" min="0" step="0.01"
+            [class.invalid]="productForm.controls.withdrawalFeeAmount.invalid && productForm.controls.withdrawalFeeAmount.touched" />
+
+          <p class="field-error"
+            *ngIf="productForm.controls.withdrawalFeeAmount.invalid && productForm.controls.withdrawalFeeAmount.touched">
+            Enter a fee of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
+          <span>Status</span>
+          <select formControlName="status">
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? 'Updating…' : 'Update product' }}
+        </button>
+        <button type="button" class="btn-secondary" (click)="cancel()" [disabled]="loading">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

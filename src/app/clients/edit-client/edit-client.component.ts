@@ -5,7 +5,13 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators }
 import { ActivatedRoute, Router } from '@angular/router';
 
 /** Custom Services */
-import { ClientsService, TrainingClient, UpdateClientPayload } from '../clients.services';
+import {
+  ClientSavingsPortfolio,
+  ClientsService,
+  SavingsAccountStatus,
+  TrainingClient,
+  UpdateClientPayload
+} from '../clients.services';
 
 /** Optional email: empty OK, otherwise must be a valid email. */
 function optionalEmail(control: AbstractControl): ValidationErrors | null {
@@ -29,8 +35,18 @@ const PHONE_PATTERN = /^[0-9]{7,15}$/;
 })
 export class EditClientComponent implements OnInit {
   client: TrainingClient | null = null;
+  portfolio: ClientSavingsPortfolio | null = null;
+  readonly portfolioStatuses: SavingsAccountStatus[] = [
+    'ACTIVE',
+    'FROZEN',
+    'CLOSED',
+    'SUBMITTED',
+    'APPROVED'
+  ];
   error = '';
+  portfolioError = '';
   busy = true;
+  portfolioBusy = false;
   saving = false;
 
   clientForm = new FormGroup({
@@ -89,6 +105,7 @@ export class EditClientComponent implements OnInit {
           gender: client.gender || ''
         });
         this.busy = false;
+        this.loadPortfolio(id);
       },
       (err: HttpErrorResponse) => {
         this.busy = false;
@@ -122,6 +139,41 @@ export class EditClientComponent implements OnInit {
 
   cancel(): void {
     this.router.navigateByUrl('/clients');
+  }
+
+  openSavingsAccount(accountId: number): void {
+    this.router.navigate(['/savingsaccounts', accountId]);
+  }
+
+  createSavingsAccount(): void {
+    if (!this.client) {
+      return;
+    }
+    this.router.navigate(['/savingsaccounts/create'], {
+      queryParams: { clientId: this.client.id }
+    });
+  }
+
+  refreshPortfolio(): void {
+    if (this.client) {
+      this.loadPortfolio(this.client.id);
+    }
+  }
+
+  private loadPortfolio(clientId: number): void {
+    this.portfolioBusy = true;
+    this.portfolioError = '';
+    this.clientsService.getSavingsPortfolio(clientId).subscribe(
+      (portfolio) => {
+        this.portfolio = portfolio;
+        this.portfolioBusy = false;
+      },
+      (err: HttpErrorResponse) => {
+        this.portfolioBusy = false;
+        this.portfolioError =
+          (err && err.error && err.error.message) || err.message || 'Failed to load savings portfolio.';
+      }
+    );
   }
 
   fieldError(name: string): string | null {

@@ -1,26 +1,14 @@
-# Frontend notes for the team
+# SG-CBS web app
 
-Angular 14-style layout matching **Mifos `web-app`**. Sample **Welcome** only.
+Angular 14 client for the SG-CBS training backend.
 
-## Structure
+## Client savings portfolio
 
-```text
-frontend/src/app/
-  app.module.ts
-  app-routing.module.ts
-  app.component.*
-  home/                      ← like web-app/src/app/home
-    home.module.ts
-    home-routing.module.ts
-    home.component.*
-    home.service.ts
-```
-
-## Next steps
-
-Add a `users/` feature module (list/create) that calls:
-
-`GET/POST /mini-fineract-provider/api/v1/users`
+Open a client from **Clients → Edit** to view its savings portfolio. The portfolio
+loads from `GET /mini-fineract-provider/api/v1/clients/{clientId}/savingsaccounts/portfolio`;
+balances and status counts are returned by the backend. **Open** navigates to the
+savings account detail, and **Create savings account** opens the create form with
+that client preselected.
 
 ## Run
 

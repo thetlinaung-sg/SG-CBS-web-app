@@ -86,4 +86,84 @@
       </div>
     </form>
   </section>
+
+  <section class="panel portfolio-section" *ngIf="client">
+    <div class="portfolio-header">
+      <div>
+        <h2 class="portfolio-title">Savings portfolio</h2>
+        <p class="portfolio-lede">Savings accounts and balances for this client.</p>
+      </div>
+      <div class="portfolio-actions">
+        <button type="button" class="btn-primary" (click)="createSavingsAccount()">
+          Create savings account
+        </button>
+      </div>
+    </div>
+
+    <p class="muted" *ngIf="portfolioBusy">Loading savings portfolio…</p>
+    <div class="portfolio-error" *ngIf="portfolioError" role="alert">
+      <p>{{ portfolioError }}</p>
+      <button type="button" class="btn-secondary" (click)="refreshPortfolio()">Try again</button>
+    </div>
+
+    <ng-container *ngIf="portfolio && !portfolioBusy">
+      <div class="portfolio-summary">
+        <div class="summary-card">
+          <span>Accounts</span>
+          <strong>{{ portfolio.accountCount }}</strong>
+        </div>
+        <div class="summary-card">
+          <span>Total balance</span>
+          <strong>{{ portfolio.totalBalance | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-card">
+          <span>Total available</span>
+          <strong>{{ portfolio.totalAvailable | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <div class="status-counts" aria-label="Accounts by status">
+        <span class="status-count" [ngClass]="status.toLowerCase()" *ngFor="let status of portfolioStatuses">
+          {{ status }} <strong>{{ portfolio.statusCounts[status] || 0 }}</strong>
+        </span>
+        <button type="button" class="refresh-link" (click)="refreshPortfolio()" [disabled]="portfolioBusy">
+          Refresh
+        </button>
+      </div>
+
+      <div class="portfolio-table-wrap">
+        <table class="portfolio-table">
+          <thead>
+            <tr>
+              <th scope="col">Account number</th>
+              <th scope="col">Product</th>
+              <th scope="col">Status</th>
+              <th scope="col">Balance</th>
+              <th scope="col">Available</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let account of portfolio.accounts">
+              <td>{{ account.accountNo }}</td>
+              <td>{{ account.productName }}</td>
+              <td>
+                <span class="account-status" [ngClass]="account.status.toLowerCase()">
+                  {{ account.status }}
+                </span>
+              </td>
+              <td class="amount">{{ account.balance | number:'1.2-2' }}</td>
+              <td class="amount">{{ account.availableBalance | number:'1.2-2' }}</td>
+              <td>
+                <button type="button" class="btn-link" (click)="openSavingsAccount(account.id)">Open</button>
+              </td>
+            </tr>
+            <tr *ngIf="portfolio.accounts.length === 0">
+              <td class="portfolio-empty" colspan="6">No savings accounts for this client yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </section>
 </div>

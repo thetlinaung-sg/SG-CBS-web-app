@@ -1,0 +1,213 @@
+<div class="page">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+
+        <button type="button" class="back" (click)="cancel()" [disabled]="loading">
+
+            ← Back
+
+        </button>
+
+    </div>
+
+
+    <!-- Main Panel -->
+    <section class="panel">
+
+        <!-- Header -->
+        <div class="panel-header">
+
+            <h1 class="title">
+                Create Savings Account
+            </h1>
+
+            <p class="lede">
+                Create a new savings account for a client.
+            </p>
+
+        </div>
+
+
+        <!-- Error -->
+        <div class="error" *ngIf="errorMessage">
+
+            {{ errorMessage }}
+
+        </div>
+
+
+        <!-- Form -->
+        <form class="form" [formGroup]="accountForm" (ngSubmit)="save()">
+
+            <p class="section-label">
+                Account Information
+            </p>
+
+
+            <div class="field-grid">
+
+                <!-- Client -->
+                <label class="field">
+
+                    <span>
+                        Client
+                    </span>
+
+                    <select formControlName="clientId" [class.invalid]="
+                accountForm.controls.clientId.invalid &&
+                accountForm.controls.clientId.touched
+            " [disabled]="loading || loadingClients">
+
+                        <option [ngValue]="null">
+                            {{
+                            loadingClients
+                            ? 'Loading clients...'
+                            : 'Select client'
+                            }}
+                        </option>
+
+                        <option *ngFor="let client of clients" [ngValue]="client.id">
+
+                            {{ getClientName(client) }} (#{{ client.id }})
+
+                        </option>
+
+                    </select>
+
+                    <p class="field-error" *ngIf="
+                accountForm.controls.clientId.invalid &&
+                accountForm.controls.clientId.touched
+            ">
+
+                        Client is required.
+
+                    </p>
+
+                </label>
+
+
+                <!-- Savings Product -->
+                <label class="field">
+
+                    <span>
+                        Savings Product
+                    </span>
+
+                    <select formControlName="productId" [class.invalid]="
+                accountForm.controls.productId.invalid &&
+                accountForm.controls.productId.touched
+            " [disabled]="loading || loadingProducts">
+
+                        <option [ngValue]="null">
+                            {{
+                            loadingProducts
+                            ? 'Loading savings products...'
+                            : 'Select savings product'
+                            }}
+                        </option>
+
+                        <option *ngFor="let product of savingsProducts" [ngValue]="product.id">
+
+                            {{ product.name }} (#{{ product.id }})
+
+                        </option>
+
+                    </select>
+
+                    <p class="field-error" *ngIf="
+                accountForm.controls.productId.invalid &&
+                accountForm.controls.productId.touched
+            ">
+
+                        Savings Product is required.
+
+                    </p>
+
+                </label>
+
+
+                <!-- Account Number -->
+                <label class="field account-number-field">
+
+                    <span>
+                        Account Number
+                    </span>
+
+                    <input type="text" formControlName="accountNo" placeholder="Enter account number" [class.invalid]="
+                accountForm.controls.accountNo.invalid &&
+                accountForm.controls.accountNo.touched
+            " />
+
+                    <p class="field-error" *ngIf="
+                accountForm.controls.accountNo.invalid &&
+                accountForm.controls.accountNo.touched
+            ">
+
+                        Account number is required.
+
+                    </p>
+
+                </label>
+
+            </div>
+
+            <!-- Selected Information -->
+            <div class="selected-info" *ngIf="
+                    getSelectedClient() ||
+                    getSelectedProduct()
+                ">
+
+                <div class="selected-item" *ngIf="getSelectedClient()">
+
+                    <strong>
+                        Client:
+                    </strong>
+
+                    {{ getClientName(getSelectedClient()!) }}
+
+                </div>
+
+                <div class="selected-item" *ngIf="getSelectedProduct()">
+
+                    <strong>
+                        Savings Product:
+                    </strong>
+
+                    {{ getSelectedProduct()?.name }}
+
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="actions">
+
+                <button type="submit" class="btn-primary" [disabled]="
+                        loading ||
+                        loadingClients ||
+                        loadingProducts
+                    ">
+
+                    {{
+                    loading
+                    ? 'Creating...'
+                    : 'Create Savings Account'
+                    }}
+
+                </button>
+
+                <button type="button" class="btn-secondary" (click)="cancel()" [disabled]="loading">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>

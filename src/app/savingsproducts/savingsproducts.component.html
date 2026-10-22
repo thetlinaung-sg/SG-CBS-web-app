@@ -1,0 +1,195 @@
+<div class="page">
+
+    <div class="toolbar">
+
+        <button type="button" class="back" (click)="goBack()">
+            ← Back
+        </button>
+
+        <button type="button" class="btn-primary" (click)="createProduct()">
+            + Create Product
+        </button>
+
+    </div>
+
+    <section class="panel">
+
+        <header class="panel-header">
+
+            <div>
+
+                <h1 class="title">
+                    Savings Products
+                </h1>
+
+                <p class="lede">
+                    Manage savings products available for clients.
+                </p>
+
+            </div>
+
+            <div class="count-badge">
+                {{ products.length }} Products
+            </div>
+
+        </header>
+
+        <p class="loading" *ngIf="loading">
+            Loading savings products...
+        </p>
+
+        <p class="error" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </p>
+
+        <div class="table-wrap" *ngIf="!loading && !errorMessage">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Product Name</th>
+
+                        <th>Short Name</th>
+
+                        <th>Currency</th>
+
+                        <th>Interest Rate</th>
+
+                        <th>Opening Balance</th>
+
+                        <th>Min. Required Balance</th>
+
+                        <th>Withdrawal Fee</th>
+
+                        <th>Lock-in</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let product of products">
+
+                        <td>
+
+                            <strong>
+                                {{ product.name }}
+                            </strong>
+
+                            <div class="description" *ngIf="product.description">
+
+                                {{ product.description }}
+
+                            </div>
+
+                        </td>
+
+                        <td class="mono">
+
+                            {{ product.shortName }}
+
+                        </td>
+
+                        <td>
+
+                            {{ product.currencyCode }}
+
+                        </td>
+
+                        <td>
+
+                            {{
+                            product.nominalAnnualInterestRate
+                            | number:'1.2-2'
+                            }}%
+
+                        </td>
+
+                        <td>
+
+                            {{
+                            product.minOpeningBalance
+                            | number:'1.0-2'
+                            }}
+
+                        </td>
+
+                        <td>
+
+                            {{
+                            product.minRequiredBalance
+                            | number:'1.0-2'
+                            }}
+
+                        </td>
+
+                        <td>
+
+                            {{
+                            product.withdrawalFeeAmount
+                            | number:'1.0-2'
+                            }}
+
+                        </td>
+
+                        <td>
+
+                            {{ product.lockinPeriod || 0 }}
+
+                            {{ product.lockinPeriodType || 'DAYS' }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge" [class.active]="product.status === 'ACTIVE'">
+
+                                {{ product.status }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button type="button" class="btn-link" (click)="editProduct(product.id)">
+
+                                    Edit
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr *ngIf="products.length === 0">
+
+                        <td class="empty" colspan="10">
+
+                            No savings products found.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>

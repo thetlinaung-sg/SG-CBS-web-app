@@ -1,0 +1,217 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f0f2f4;
+  color: #1f2a37;
+  font-family: "Karla", "Segoe UI", sans-serif;
+}
+
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+.toolbar,
+.filters,
+.pagination,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+  color: #718096;
+  font-size: 0.8rem;
+}
+
+.back,
+.account-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2f6d5f;
+  font: inherit;
+  cursor: pointer;
+}
+
+.back {
+  font-weight: 700;
+}
+
+.panel {
+  padding: 1.1rem;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 41, 66, 0.1);
+}
+
+.panel-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.panel-header p {
+  margin: 0.3rem 0 0.9rem;
+  color: #718096;
+  font-size: 0.8rem;
+}
+
+.filters {
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #718096;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.filters select {
+  min-width: 8rem;
+  padding: 0.4rem;
+  border: 1px solid #c5cdd6;
+  border-radius: 3px;
+  background: white;
+  color: #1f2a37;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.btn-outline,
+.btn-primary,
+.btn-danger {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #2f6d5f;
+  border-radius: 3px;
+  background: white;
+  color: #2f6d5f;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #2f6d5f;
+  color: white;
+}
+
+.btn-danger {
+  border-color: #cc4b4b;
+  color: #bd3535;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+
+.table-wrap {
+  overflow: auto;
+  border: 1px solid #e4e8ee;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+th,
+td {
+  padding: 0.55rem;
+  border-bottom: 1px solid #eef1f4;
+  text-align: left;
+  white-space: nowrap;
+}
+
+thead th {
+  background: #f5f7f9;
+  color: #6b7785;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.account-link {
+  text-decoration: underline;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.status-pending {
+  background: #fff4d6;
+  color: #886300;
+}
+
+.status-approved {
+  background: #e2f3e9;
+  color: #247447;
+}
+
+.status-rejected {
+  background: #fde8e7;
+  color: #b8322a;
+}
+
+.actions {
+  flex-wrap: wrap;
+}
+
+.hint,
+.loading,
+.pagination,
+.empty {
+  color: #718096;
+  font-size: 0.8rem;
+}
+
+.notice,
+.error {
+  margin: 0.7rem 0;
+  font-size: 0.85rem;
+}
+
+.notice {
+  color: #2f6d5f;
+}
+
+.error {
+  color: #a83232;
+}
+
+.empty {
+  padding: 1rem;
+  text-align: center;
+}
+
+.pagination {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .panel {
+    padding: 0.75rem;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
+}

@@ -1,12 +1,134 @@
 <div class="home-page">
   <div class="toolbar">
     <div class="toolbar-spacer"></div>
+    <button type="button" class="btn-secondary" (click)="refreshDashboard()"
+      [disabled]="summaryLoading || activityLoading">
+      {{ summaryLoading || activityLoading ? 'Refreshing…' : 'Refresh dashboard' }}
+    </button>
     <button type="button" class="btn-primary" (click)="logout()">
       Sign out
     </button>
   </div>
 
   <div class="container">
+    <section class="dashboard-card">
+      <header class="section-header">
+        <h2>Pending approvals</h2>
+        <p>Maker-checker inbox for large withdrawal, transfer, and interest requests.</p>
+      </header>
+      <div class="approval-summary">
+        <strong *ngIf="!approvalsLoading">{{ pendingApprovalCount }}</strong>
+        <span *ngIf="approvalsLoading" class="metric-label">Loading…</span>
+        <button type="button" class="btn-primary" (click)="openMakerCheckerInbox()">
+          Open inbox
+        </button>
+      </div>
+    </section>
+
+    <section class="dashboard-card">
+      <header class="section-header">
+        <h2>Savings overview</h2>
+        <p>Server-side KPIs exclude closed accounts from money totals.</p>
+      </header>
+
+      <div *ngIf="summaryLoading" class="dashboard-message" role="status">
+        Loading savings overview…
+      </div>
+      <div *ngIf="summaryError" class="dashboard-message error-message" role="alert">
+        {{ summaryError }}
+      </div>
+
+      <ng-container *ngIf="summary && !summaryLoading">
+        <div class="metrics-grid">
+          <button type="button" class="metric-card" (click)="openSavingsList()">
+            <span class="metric-label">Total accounts</span>
+            <strong>{{ summary.totalAccounts }}</strong>
+          </button>
+          <button type="button" class="metric-card" (click)="openSavingsList('ACTIVE')">
+            <span class="metric-label">Active</span>
+            <strong>{{ summary.byStatus.ACTIVE }}</strong>
+          </button>
+          <button type="button" class="metric-card" (click)="openSavingsList('FROZEN')">
+            <span class="metric-label">Frozen</span>
+            <strong>{{ summary.byStatus.FROZEN }}</strong>
+          </button>
+          <button type="button" class="metric-card" (click)="openSavingsList('SUBMITTED')">
+            <span class="metric-label">Submitted</span>
+            <strong>{{ summary.byStatus.SUBMITTED }}</strong>
+          </button>
+          <button type="button" class="metric-card" (click)="openSavingsList('APPROVED')">
+            <span class="metric-label">Approved</span>
+            <strong>{{ summary.byStatus.APPROVED }}</strong>
+          </button>
+          <button type="button" class="metric-card" (click)="openSavingsList('CLOSED')">
+            <span class="metric-label">Closed</span>
+            <strong>{{ summary.byStatus.CLOSED }}</strong>
+          </button>
+        </div>
+
+        <div class="money-totals">
+          <div>
+            <span class="metric-label">Ledger total</span>
+            <strong>{{ summary.totalLedgerBalance | number:'1.2-2' }}</strong>
+          </div>
+          <div>
+            <span class="metric-label">Available total</span>
+            <strong>{{ summary.totalAvailableBalance | number:'1.2-2' }}</strong>
+          </div>
+          <div>
+            <span class="metric-label">Active holds</span>
+            <strong>{{ summary.totalActiveHolds | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+
+    <section class="dashboard-card recent-activity-card">
+      <header class="section-header">
+        <h2>Recent savings activity</h2>
+        <p>Latest audit events across accounts.</p>
+      </header>
+
+      <div *ngIf="activityLoading" class="dashboard-message" role="status">
+        Loading recent savings activity…
+      </div>
+      <div *ngIf="activityError" class="dashboard-message error-message" role="alert">
+        {{ activityError }}
+      </div>
+      <div class="recent-table-wrap" *ngIf="!activityLoading && !activityError">
+        <table class="recent-activity-table">
+          <thead>
+            <tr>
+              <th scope="col">When</th>
+              <th scope="col">Event</th>
+              <th scope="col">Account</th>
+              <th scope="col">Client</th>
+              <th scope="col">Amount</th>
+              <th scope="col">By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of recentActivity">
+              <td>{{ item.performedOn | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+              <td>{{ item.eventType }}</td>
+              <td>
+                <button type="button" class="account-link"
+                  (click)="openSavingsAccount(item.savingsAccountId)">
+                  {{ item.accountNo }}
+                </button>
+              </td>
+              <td>{{ item.clientDisplayName || '—' }}</td>
+              <td>{{ item.amount === null ? '—' : (item.amount | number:'1.2-2') }}</td>
+              <td>{{ item.performedBy }}</td>
+            </tr>
+            <tr *ngIf="recentActivity.length === 0">
+              <td class="empty" colspan="6">No savings activity found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="welcome-card">
       <header class="card-header">
         <h1 class="title">Welcome, {{ username }}!</h1>
@@ -15,12 +137,7 @@
       <div class="card-content">
         <label class="search-field">
           <span class="search-label">Search Activity</span>
-          <input
-            type="search"
-            [formControl]="searchText"
-            placeholder="Search Activity"
-            autocomplete="off"
-          />
+          <input type="search" [formControl]="searchText" placeholder="Search Activity" autocomplete="off" />
         </label>
 
         <div class="table-wrap" *ngIf="filteredActivities | async as matches">

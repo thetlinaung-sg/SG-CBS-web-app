@@ -49,6 +49,27 @@ export interface UpdateClientPayload {
   gender?: string | null;
 }
 
+export type SavingsAccountStatus = 'SUBMITTED' | 'APPROVED' | 'ACTIVE' | 'FROZEN' | 'CLOSED';
+
+export interface ClientSavingsPortfolioAccount {
+  id: number;
+  accountNo: string;
+  productName: string;
+  status: SavingsAccountStatus;
+  balance: number;
+  availableBalance: number;
+}
+
+export interface ClientSavingsPortfolio {
+  clientId: number;
+  clientDisplayName: string;
+  totalBalance: number;
+  totalAvailable: number;
+  accountCount: number;
+  statusCounts: Record<SavingsAccountStatus, number>;
+  accounts: ClientSavingsPortfolioAccount[];
+}
+
 /**
  * Clients service — CRUD against mini-fineract /v1/clients (soft delete = close).
  */
@@ -66,6 +87,12 @@ export class ClientsService {
 
   getOne(id: number): Observable<TrainingClient> {
     return this.http.get<TrainingClient>(`${this.apiBase}/${id}`);
+  }
+
+  getSavingsPortfolio(clientId: number): Observable<ClientSavingsPortfolio> {
+    return this.http.get<ClientSavingsPortfolio>(
+      `${this.apiBase}/${clientId}/savingsaccounts/portfolio`
+    );
   }
 
   create(payload: CreateClientPayload): Observable<TrainingClient> {
