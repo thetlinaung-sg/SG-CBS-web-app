@@ -52,7 +52,11 @@
         </header>
 
         <div class="standing-instruction-top-summary" *ngIf="standingInstructionBatch">
-            <span>Run for {{ standingInstructionBatch.businessDate }}: {{ standingInstructionBatch.processed }} processed, {{ standingInstructionBatch.success }} successful, {{ standingInstructionBatch.skipped }} skipped, {{ standingInstructionBatch.failed }} failed<span *ngIf="standingInstructionBatch.pendingApproval">, {{ standingInstructionBatch.pendingApproval }} pending approval</span>.</span>
+            <span>Run for {{ standingInstructionBatch.businessDate }}: {{ standingInstructionBatch.processed }}
+                processed, {{ standingInstructionBatch.success }} successful, {{ standingInstructionBatch.skipped }}
+                skipped, {{ standingInstructionBatch.failed }} failed<span
+                    *ngIf="standingInstructionBatch.pendingApproval">, {{ standingInstructionBatch.pendingApproval }}
+                    pending approval</span>.</span>
             <a href="#/savings/makerchecker">
                 Open Maker-Checker Inbox
             </a>
@@ -1031,13 +1035,15 @@
                         <p>Create recurring transfers to another ACTIVE account for this client.</p>
                     </div>
                     <div class="standing-instructions-heading-actions">
-                        <button type="submit" form="standing-instruction-form" class="action-button transfer-submit"
+                        <button *ngIf="account.status === 'ACTIVE'" type="submit"
+                            form="standing-instruction-form"
+                            class="action-button transfer-submit standing-instruction-create-button"
                             [disabled]="standingInstructionProcessing || transferAccounts.length === 0">
                             Create Standing Instruction
                         </button>
-                        <button type="button" class="action-button transfer-submit"
-                            [disabled]="standingInstructionProcessing"
-                            (click)="runDueStandingInstructions()">
+                        <button type="button"
+                            class="action-button transfer-submit standing-instruction-run-button"
+                            [disabled]="standingInstructionProcessing" (click)="runDueStandingInstructions()">
                             {{ standingInstructionProcessing ? 'Running...' : 'Run Due Instructions (Today)' }}
                         </button>
                     </div>
@@ -1051,16 +1057,14 @@
                     {{ standingInstructionSuccessMessage }}
                 </div>
 
-                <form id="standing-instruction-form" class="standing-instruction-form" *ngIf="account.status === 'ACTIVE'"
-                    (ngSubmit)="createStandingInstruction()">
+                <form id="standing-instruction-form" class="standing-instruction-form"
+                    *ngIf="account.status === 'ACTIVE'" (ngSubmit)="createStandingInstruction()">
                     <div>
                         <label for="standingInstructionDestination">To account</label>
                         <select id="standingInstructionDestination" name="standingInstructionDestination"
-                            [(ngModel)]="standingInstructionToAccountId"
-                            [disabled]="standingInstructionProcessing">
+                            [(ngModel)]="standingInstructionToAccountId" [disabled]="standingInstructionProcessing">
                             <option [ngValue]="null">Select destination account</option>
-                            <option *ngFor="let transferAccount of transferAccounts"
-                                [ngValue]="transferAccount.id">
+                            <option *ngFor="let transferAccount of transferAccounts" [ngValue]="transferAccount.id">
                                 {{ transferAccount.accountNo }} — Balance:
                                 {{ transferAccount.balance | number:'1.2-2' }}
                             </option>
@@ -1068,15 +1072,14 @@
                     </div>
                     <div>
                         <label for="standingInstructionAmount">Amount</label>
-                        <input id="standingInstructionAmount" name="standingInstructionAmount" type="number"
-                            min="0.01" step="0.01" [(ngModel)]="standingInstructionAmount"
+                        <input id="standingInstructionAmount" name="standingInstructionAmount" type="number" min="0.01"
+                            step="0.01" [(ngModel)]="standingInstructionAmount"
                             [disabled]="standingInstructionProcessing">
                     </div>
                     <div>
                         <label for="standingInstructionFrequency">Frequency</label>
                         <select id="standingInstructionFrequency" name="standingInstructionFrequency"
-                            [(ngModel)]="standingInstructionFrequency"
-                            [disabled]="standingInstructionProcessing">
+                            [(ngModel)]="standingInstructionFrequency" [disabled]="standingInstructionProcessing">
                             <option value="DAILY">Daily</option>
                             <option value="WEEKLY">Weekly</option>
                             <option value="MONTHLY">Monthly</option>
@@ -1085,29 +1088,26 @@
                     <div>
                         <label for="standingInstructionValidFrom">Valid from</label>
                         <input id="standingInstructionValidFrom" name="standingInstructionValidFrom" type="date"
-                            [(ngModel)]="standingInstructionValidFrom"
-                            [disabled]="standingInstructionProcessing">
+                            [(ngModel)]="standingInstructionValidFrom" [disabled]="standingInstructionProcessing">
                     </div>
                     <div>
                         <label for="standingInstructionValidTo">Valid to (optional)</label>
                         <input id="standingInstructionValidTo" name="standingInstructionValidTo" type="date"
-                            [(ngModel)]="standingInstructionValidTo"
-                            [disabled]="standingInstructionProcessing">
+                            [(ngModel)]="standingInstructionValidTo" [disabled]="standingInstructionProcessing">
                     </div>
                     <div>
                         <label for="standingInstructionNextDueDate">Next due</label>
                         <input id="standingInstructionNextDueDate" name="standingInstructionNextDueDate" type="date"
-                            [(ngModel)]="standingInstructionNextDueDate"
-                            [min]="standingInstructionValidFrom"
-                            [max]="standingInstructionValidTo || null"
-                            [disabled]="standingInstructionProcessing">
+                            [(ngModel)]="standingInstructionNextDueDate" [min]="standingInstructionValidFrom"
+                            [max]="standingInstructionValidTo || null" [disabled]="standingInstructionProcessing">
                     </div>
                 </form>
 
                 <p class="standing-instruction-empty" *ngIf="account.status !== 'ACTIVE'">
                     Create is available only while this source account is ACTIVE.
                 </p>
-                <p class="standing-instruction-empty" *ngIf="account.status === 'ACTIVE' && transferAccounts.length === 0">
+                <p class="standing-instruction-empty"
+                    *ngIf="account.status === 'ACTIVE' && transferAccounts.length === 0">
                     No other ACTIVE savings account is available for this client.
                 </p>
 
@@ -1135,11 +1135,11 @@
                                     <td>{{ instruction.frequency }}</td>
                                     <td>{{ instruction.nextDueDate | date:'mediumDate' }}</td>
                                     <td><span class="standing-instruction-status"
-                                        [class.active]="instruction.status === 'ACTIVE'"
-                                        [class.paused]="instruction.status === 'PAUSED'"
-                                        [class.cancelled]="instruction.status === 'CANCELLED'">
-                                        {{ instruction.status }}
-                                    </span></td>
+                                            [class.active]="instruction.status === 'ACTIVE'"
+                                            [class.paused]="instruction.status === 'PAUSED'"
+                                            [class.cancelled]="instruction.status === 'CANCELLED'">
+                                            {{ instruction.status }}
+                                        </span></td>
                                     <td>
                                         <div class="standing-instruction-run"
                                             *ngFor="let run of standingInstructionHistories[instruction.id] || []">
@@ -1459,7 +1459,6 @@
                 <div class="section-header">
 
                     <div>
-
                         <h2 class="section-title">
                             Transaction History
                         </h2>
@@ -1470,63 +1469,47 @@
 
                     </div>
 
-
-                    <!-- Date Filter -->
-                    <div class="transaction-search">
-
-                        <div class="date-field">
-
-                            <label>
-                                From Date
-                            </label>
-
-                            <input type="date" [(ngModel)]="fromDate" (change)="filterTransactions()">
-
-                        </div>
-
-
-                        <div class="date-field">
-
-                            <label>
-                                To Date
-                            </label>
-
-                            <input type="date" [(ngModel)]="toDate" (change)="filterTransactions()">
-
-                        </div>
-
-
-                        <button type="button" class="clear-search-button" (click)="clearTransactionSearch()">
-
-                            Clear
-
+                    <div class="transaction-header-actions">
+                        <span class="count-badge">
+                            {{ filteredTransactions.length }} Transactions
+                        </span>
+                        <button
+                            type="button"
+                            class="history-toggle-button"
+                            [attr.aria-expanded]="transactionHistoryExpanded"
+                            aria-controls="transaction-history-content"
+                            [attr.aria-label]="transactionHistoryExpanded ? 'Hide transaction history' : 'Show transaction history'"
+                            (click)="transactionHistoryExpanded = !transactionHistoryExpanded">
+                            {{ transactionHistoryExpanded ? 'Hide history' : 'Show history' }}
                         </button>
-
-
-                        <button type="button" class="export-csv-button" [disabled]="filteredTransactions.length === 0">
-
-                            Export CSV
-
-                        </button>
-
                     </div>
-
-
-                    <span class="count-badge">
-
-                        {{ filteredTransactions.length }}
-                        Transactions
-
-                    </span>
 
                 </div>
 
+                <div id="transaction-history-content" [hidden]="!transactionHistoryExpanded">
+                    <!-- Date Filter -->
+                    <div class="transaction-search">
+                        <div class="date-field">
+                            <label>From Date</label>
+                            <input type="date" [(ngModel)]="fromDate" (change)="filterTransactions()">
+                        </div>
+                        <div class="date-field">
+                            <label>To Date</label>
+                            <input type="date" [(ngModel)]="toDate" (change)="filterTransactions()">
+                        </div>
+                        <button type="button" class="clear-search-button" (click)="clearTransactionSearch()">
+                            Clear
+                        </button>
+                        <button type="button" class="export-csv-button" [disabled]="filteredTransactions.length === 0">
+                            Export CSV
+                        </button>
+                    </div>
 
-                <!-- ================================================= -->
-                <!-- UNDO ERROR MESSAGE -->
-                <!-- ================================================= -->
+                    <!-- ================================================= -->
+                    <!-- UNDO ERROR MESSAGE -->
+                    <!-- ================================================= -->
 
-                <!-- <div class="error undo-order-error" *ngIf="
+                    <!-- <div class="error undo-order-error" *ngIf="
                         undoErrorMessage ||
                         errorMessage ===
                         'Only the latest transaction can be undone.'
@@ -1540,11 +1523,11 @@
                 </div> -->
 
 
-                <!-- ================================================= -->
-                <!-- UNDO SUCCESS MESSAGE -->
-                <!-- ================================================= -->
+                    <!-- ================================================= -->
+                    <!-- UNDO SUCCESS MESSAGE -->
+                    <!-- ================================================= -->
 
-                <!-- <div class="success undo-success-message" *ngIf="
+                    <!-- <div class="success undo-success-message" *ngIf="
                         successMessage ===
                         'Transaction undone successfully.' ||
                         successMessage ===
@@ -1556,14 +1539,14 @@
                 </div> -->
 
 
-                <div class="empty" *ngIf="filteredTransactions.length === 0">
+                    <div class="empty" *ngIf="filteredTransactions.length === 0">
 
-                    No transactions found for the selected date range.
+                        No transactions found for the selected date range.
 
-                </div>
+                    </div>
 
 
-                <div class="table-wrap" *ngIf="filteredTransactions.length > 0">
+                    <div class="table-wrap" *ngIf="filteredTransactions.length > 0">
 
                     <table class="data-table">
 
@@ -1777,6 +1760,8 @@
 
                 </div>
 
+                </div>
+
             </div>
 
 
@@ -1802,46 +1787,55 @@
                     </div>
 
 
-                    <span class="count-badge">
-
-                        {{ audits.length }}
-                        Events
-
-                    </span>
-
-                </div>
-
-
-                <!-- Audit Error -->
-                <div class="error" *ngIf="auditErrorMessage">
-
-                    {{ auditErrorMessage }}
-
-                </div>
-
-
-                <!-- Audit Loading -->
-                <div class="empty" *ngIf="auditsLoading">
-
-                    Loading audit history...
+                    <div class="transaction-header-actions">
+                        <span class="count-badge">
+                            {{ audits.length }} Events
+                        </span>
+                        <button
+                            type="button"
+                            class="history-toggle-button"
+                            [attr.aria-expanded]="auditHistoryExpanded"
+                            aria-controls="audit-history-content"
+                            [attr.aria-label]="auditHistoryExpanded ? 'Hide audit history' : 'Show audit history'"
+                            (click)="auditHistoryExpanded = !auditHistoryExpanded">
+                            {{ auditHistoryExpanded ? 'Hide history' : 'Show history' }}
+                        </button>
+                    </div>
 
                 </div>
 
+                <div id="audit-history-content" [hidden]="!auditHistoryExpanded">
 
-                <!-- No Audit -->
-                <div class="empty" *ngIf="
+                    <!-- Audit Error -->
+                    <div class="error" *ngIf="auditErrorMessage">
+
+                        {{ auditErrorMessage }}
+
+                    </div>
+
+
+                    <!-- Audit Loading -->
+                    <div class="empty" *ngIf="auditsLoading">
+
+                        Loading audit history...
+
+                    </div>
+
+
+                    <!-- No Audit -->
+                    <div class="empty" *ngIf="
                         !auditsLoading &&
                         audits.length === 0 &&
                         !auditErrorMessage
                     ">
 
-                    No audit history found for this account.
+                        No audit history found for this account.
 
-                </div>
+                    </div>
 
 
-                <!-- Audit Table -->
-                <div class="table-wrap" *ngIf="
+                    <!-- Audit Table -->
+                    <div class="table-wrap" *ngIf="
                         !auditsLoading &&
                         audits.length > 0
                     ">
@@ -1895,7 +1889,7 @@
                                 <!-- Event -->
                                 <td>
 
-                                    <span class="transaction-badge">
+                                    <span class="audit-event-badge" [ngClass]="getAuditEventClass(audit.eventType)">
 
                                         {{ audit.eventType }}
 
@@ -1954,6 +1948,8 @@
                         </tbody>
 
                     </table>
+
+                    </div>
 
                 </div>
 

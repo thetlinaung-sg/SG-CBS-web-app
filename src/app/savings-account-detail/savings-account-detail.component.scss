@@ -220,7 +220,7 @@
     white-space: nowrap;
 }
 
-.standing-instruction-top-summary > span {
+.standing-instruction-top-summary>span {
     flex: 0 0 auto;
 }
 
@@ -1322,7 +1322,8 @@
 .standing-instructions-heading h3 {
     margin: 0;
     color: var(--ink);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
     font-weight: 700;
 }
 
@@ -1330,6 +1331,7 @@
     margin: 0.2rem 0 0;
     color: var(--muted);
     font-size: 0.72rem;
+    line-height: 1.5;
 }
 
 .standing-instruction-form {
@@ -1416,27 +1418,46 @@
 
 .standing-instruction-table-wrap {
     overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: #fff;
 }
 
 .standing-instruction-table {
     width: 100%;
-    margin-top: 0.75rem;
+    min-width: 680px;
     border-collapse: collapse;
-    font-size: 0.74rem;
+    font-size: 0.78rem;
 }
 
 .standing-instruction-table th,
 .standing-instruction-table td {
-    padding: 0.55rem;
+    padding: 0.7rem 0.75rem;
     border-bottom: 1px solid var(--line);
     text-align: left;
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 .standing-instruction-table th {
+    background: #f1f5f3;
     color: var(--muted);
     font-size: 0.62rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.standing-instruction-table tbody tr {
+    transition: background-color 140ms ease;
+}
+
+.standing-instruction-table tbody tr:hover {
+    background: #f5f9f7;
+}
+
+.standing-instruction-table tbody tr:last-child td {
+    border-bottom: 0;
 }
 
 .standing-instruction-status {
@@ -2011,6 +2032,49 @@
     margin-bottom: 0;
 }
 
+.transaction-header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.transaction-header-actions .count-badge,
+.transaction-header-actions .history-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 36px;
+}
+
+.history-toggle-button {
+    padding: 0 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--accent-dark);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.history-toggle-button:hover {
+    border-color: #b8ccc3;
+    background: #edf5f1;
+}
+
+.history-toggle-button:focus-visible {
+    outline: 3px solid rgba(36, 116, 94, 0.2);
+    outline-offset: 2px;
+}
+
+.history-toggle-button[aria-expanded="true"] {
+    background: #f5f8f6;
+}
+
 
 .table-wrap {
     width: 100%;
@@ -2298,11 +2362,30 @@
 
 .audit-section .section-header {
     margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid #edf1ef;
 }
 
+.audit-section .table-wrap {
+    border-radius: 6px;
+    background: #fff;
+}
 
 .audit-table {
     min-width: 760px;
+}
+
+.audit-table th,
+.audit-table td {
+    padding: 0.85rem 0.9rem;
+}
+
+.audit-table tbody tr:nth-child(even) {
+    background: #fafcfb;
+}
+
+.audit-table tbody tr:hover {
+    background: #f1f7f4;
 }
 
 
@@ -2346,18 +2429,43 @@
 
 /* Audit event badge */
 
-.audit-table .transaction-badge {
-    padding: 0.3rem 0.55rem;
-
-    border-radius: 4px;
-
-    background: #e7f1ec;
-    color: var(--accent-dark);
-
-    font-size: 0.72rem;
+.audit-event-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.7rem;
     font-weight: 700;
-
+    letter-spacing: 0.015em;
     white-space: nowrap;
+}
+
+.audit-event-badge::before {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+.audit-event-financial {
+    border-color: #cfe5d9;
+    background: #eaf5ee;
+    color: #27664b;
+}
+
+.audit-event-control {
+    border-color: #eadcb8;
+    background: #fbf5e7;
+    color: #84621d;
+}
+
+.audit-event-account {
+    border-color: #d8e2ed;
+    background: #eef3f8;
+    color: #48627c;
 }
 
 
@@ -2821,7 +2929,13 @@
     }
 
     .standing-instructions-heading-actions {
-        flex-wrap: wrap;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .standing-instructions-heading-actions .transfer-submit {
+        width: 100%;
     }
 
     .standing-instruction-form {

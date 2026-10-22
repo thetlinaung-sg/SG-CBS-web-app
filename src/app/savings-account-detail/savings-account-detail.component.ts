@@ -125,6 +125,8 @@ export class SavingsAccountDetailComponent implements OnInit {
   account: SavingsAccount | null = null;
 
   transactions: SavingsTransaction[] = [];
+  transactionHistoryExpanded = true;
+  auditHistoryExpanded = true;
 
   clientName = '';
   productName = '';
@@ -2575,6 +2577,31 @@ export class SavingsAccountDetailComponent implements OnInit {
         this.auditsLoading = false;
       }
     });
+  }
+
+  getAuditEventClass(eventType: string): string {
+    const normalizedEventType = eventType.toUpperCase();
+
+    if (
+      normalizedEventType.includes('DEPOSIT') ||
+      normalizedEventType.includes('WITHDRAW') ||
+      normalizedEventType.includes('TRANSFER') ||
+      normalizedEventType.includes('FEE') ||
+      normalizedEventType.includes('INTEREST') ||
+      normalizedEventType.includes('REVERS')
+    ) {
+      return 'audit-event-financial';
+    }
+
+    if (
+      normalizedEventType.includes('HOLD') ||
+      normalizedEventType.includes('FREEZE') ||
+      normalizedEventType.includes('UNFREEZE')
+    ) {
+      return 'audit-event-control';
+    }
+
+    return 'audit-event-account';
   }
 
   /**
