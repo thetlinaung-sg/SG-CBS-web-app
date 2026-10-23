@@ -112,6 +112,16 @@
         </label>
 
         <label class="field">
+          <span>Closure fee</span>
+          <input type="number" formControlName="closureFeeAmount" min="0" step="0.01"
+            [class.invalid]="productForm.controls.closureFeeAmount.invalid && productForm.controls.closureFeeAmount.touched" />
+          <p class="field-error"
+            *ngIf="productForm.controls.closureFeeAmount.invalid && productForm.controls.closureFeeAmount.touched">
+            Enter a closure fee of zero or more.
+          </p>
+        </label>
+
+        <label class="field">
           <span>Status</span>
           <select formControlName="status">
             <option value="ACTIVE">ACTIVE</option>

@@ -15,6 +15,7 @@ interface SavingsProduct {
     lockinPeriod: number;
     lockinPeriodType: string;
     withdrawalFeeAmount: number;
+    closureFeeAmount: number;
     status: string;
 }
 
@@ -94,6 +95,14 @@ export class EditSavingsProductComponent implements OnInit {
             ]
         ],
 
+        closureFeeAmount: [
+            0,
+            [
+                Validators.required,
+                Validators.min(0)
+            ]
+        ],
+
         status: [
             'ACTIVE',
             Validators.required
@@ -166,6 +175,9 @@ export class EditSavingsProductComponent implements OnInit {
 
                     withdrawalFeeAmount:
                         product.withdrawalFeeAmount,
+
+                    closureFeeAmount:
+                        product.closureFeeAmount,
 
                     status:
                         product.status

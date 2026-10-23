@@ -722,114 +722,130 @@
             <!-- ACTIVE ACTIONS -->
             <!-- ================================================= -->
 
-            <div class="section" *ngIf="account.status === 'ACTIVE'">
 
-                <h2 class="section-title">
-                    Account Actions
-                </h2>
+            <div class="section" *ngIf="account.status === 'ACTIVE'">
+                <h2 class="section-title">Account Actions</h2>
 
                 <div class="action-grid">
 
                     <!-- DEPOSIT -->
                     <div class="action-card">
-
                         <div class="action-header">
-
-                            <h3>
-                                Deposit
-                            </h3>
-
+                            <h3>Deposit</h3>
                         </div>
 
-                        <p>
-                            Add money to this savings account.
-                        </p>
+                        <p>Add money to this savings account.</p>
 
-                        <input type="number" [(ngModel)]="depositAmount" placeholder="Enter amount" min="0" step="0.01">
+                        <input type="number" [(ngModel)]="depositAmount" placeholder="Enter amount" min="0"
+                            step="0.01" />
 
-                        <button type="button" class="action-button" [disabled]="processing" (click)="deposit()">
-
-                            {{
-                            processing
-                            ? 'Processing...'
-                            : 'Deposit'
-                            }}
-
+                        <button type="button" class="action-button deposit-action-button" [disabled]="processing"
+                            (click)="deposit()">
+                            <span>{{ processing ? 'Processing...' : 'Deposit funds' }}</span>
                         </button>
-
                     </div>
-
 
                     <!-- WITHDRAW -->
                     <div class="action-card">
-
                         <div class="action-header">
-
-                            <h3>
-                                Withdraw
-                            </h3>
-
+                            <h3>Withdraw</h3>
                         </div>
 
-                        <p>
-                            Withdraw money from this account.
-                        </p>
+                        <p>Withdraw money from this account.</p>
 
                         <input type="number" [(ngModel)]="withdrawAmount" placeholder="Enter amount" min="0"
-                            step="0.01">
-
+                            step="0.01" />
 
                         <div class="withdraw-form-error" *ngIf="withdrawErrorMessage">
-
                             {{ withdrawErrorMessage }}
-
                         </div>
 
-
-                        <button type="button" class="action-button" [disabled]="processing" (click)="withdraw()">
-
-                            {{
-                            processing
-                            ? 'Processing...'
-                            : 'Withdraw'
-                            }}
-
+                        <button type="button" class="action-button withdraw-action-button" [disabled]="processing"
+                            (click)="withdraw()">
+                            <span>{{ processing ? 'Processing...' : 'Withdraw funds' }}</span>
                         </button>
-
-                    </div>
-
-
-                    <!-- CLOSE -->
-                    <div class="action-card close-card">
-
-                        <div class="action-header">
-
-                            <h3>
-                                Close Account
-                            </h3>
-
-                        </div>
-
-                        <p>
-                            Close this savings account.
-                            No further deposits or withdrawals
-                            will be allowed.
-                        </p>
-
-                        <button type="button" class="close-button" [disabled]="processing" (click)="closeAccount()">
-
-                            {{
-                            processing
-                            ? 'Closing...'
-                            : 'Close Account'
-                            }}
-
-                        </button>
-
                     </div>
 
                 </div>
+            </div>
 
+
+            <!-- ================================================= -->
+            <!-- CLOSE & SETTLE -->
+            <!-- ================================================= -->
+
+            <div class="section closure-section" *ngIf="account.status === 'ACTIVE' || account.status === 'FROZEN'">
+
+                <h2 class="section-title">Close &amp; settle</h2>
+                <div class="closure-panel">
+                    <p class="closure-description">
+                        Preview blockers first. Any residual balance is transferred to another ACTIVE account
+                        belonging to the same client. Open standing instructions are cancelled only after a successful
+                        close.
+                    </p>
+
+                    <p class="closure-preview-status" *ngIf="closurePreview">
+                        Preview loaded — canClose:
+                        <strong [class.closure-ready]="closurePreview.canClose">
+                            {{ closurePreview.canClose ? 'YES' : 'NO' }}
+                        </strong>
+                        · residual: {{ closurePreview.residualAmount | number:'1.2-2' }}
+                    </p>
+
+                    <div class="closure-summary" *ngIf="closurePreview">
+                        <span>Balance: {{ closurePreview.balance | number:'1.2-2' }}</span>
+                        <span>Available: {{ closurePreview.availableBalance | number:'1.2-2' }}</span>
+                        <span *ngIf="closurePreview.closureFeeAlreadyCharged">Closure fee already charged</span>
+                        <span *ngIf="!closurePreview.closureFeeAlreadyCharged">
+                            Closure fee: {{ closurePreview.closureFeeAmount | number:'1.2-2' }}
+                        </span>
+                    </div>
+
+                    <button type="button" class="closure-refresh-button"
+                        [disabled]="processing || closurePreviewLoading" (click)="refreshClosurePreview()">
+                        {{ closurePreviewLoading ? 'Refreshing...' : 'Refresh preview' }}
+                    </button>
+
+                    <div class="closure-blockers" *ngIf="closurePreview?.blockers?.length">
+                        <strong>Cannot close yet</strong>
+                        <ul>
+                            <li *ngFor="let blocker of closurePreview?.blockers">{{ blocker }}</li>
+                        </ul>
+                    </div>
+
+                    <div class="closure-warnings" *ngIf="closurePreview?.warnings?.length">
+                        <ul>
+                            <li *ngFor="let warning of closurePreview?.warnings">{{ warning }}</li>
+                        </ul>
+                    </div>
+
+                    <label class="closure-destination" *ngIf="closurePreview && closurePreview.residualAmount > 0">
+                        <span>Transfer residual to</span>
+                        <select [(ngModel)]="selectedClosureDestinationAccountId"
+                            [disabled]="processing || closurePreviewLoading">
+                            <option [ngValue]="null">Select an ACTIVE same-client account</option>
+                            <option *ngFor="let destination of closurePreview.destinationAccounts"
+                                [ngValue]="destination.id">
+                                {{ destination.accountNo }} (available
+                                {{ (destination.availableBalance ?? destination.balance) | number:'1.2-2' }})
+                            </option>
+                        </select>
+                    </label>
+
+                    <p class="closure-maker-checker" *ngIf="closurePreview?.requiresMakerChecker">
+                        The residual transfer meets the maker-checker threshold. Approve the transfer in the
+                        maker-checker inbox, then refresh this preview and confirm close again.
+                    </p>
+
+                    <p class="closure-message error" *ngIf="closureErrorMessage">{{ closureErrorMessage }}</p>
+                    <p class="closure-message success" *ngIf="closureSuccessMessage">{{ closureSuccessMessage }}</p>
+
+                    <button type="button" class="close-button" [disabled]="processing || closurePreviewLoading || !closurePreview || !closurePreview.canClose
+                            || (closurePreview.residualAmount > 0 && selectedClosureDestinationAccountId === null)"
+                        (click)="closeAndSettle()">
+                        {{ processing ? 'Processing...' : 'Confirm close & settle' }}
+                    </button>
+                </div>
             </div>
 
 
@@ -1035,14 +1051,12 @@
                         <p>Create recurring transfers to another ACTIVE account for this client.</p>
                     </div>
                     <div class="standing-instructions-heading-actions">
-                        <button *ngIf="account.status === 'ACTIVE'" type="submit"
-                            form="standing-instruction-form"
+                        <button *ngIf="account.status === 'ACTIVE'" type="submit" form="standing-instruction-form"
                             class="action-button transfer-submit standing-instruction-create-button"
                             [disabled]="standingInstructionProcessing || transferAccounts.length === 0">
                             Create Standing Instruction
                         </button>
-                        <button type="button"
-                            class="action-button transfer-submit standing-instruction-run-button"
+                        <button type="button" class="action-button transfer-submit standing-instruction-run-button"
                             [disabled]="standingInstructionProcessing" (click)="runDueStandingInstructions()">
                             {{ standingInstructionProcessing ? 'Running...' : 'Run Due Instructions (Today)' }}
                         </button>
@@ -1473,9 +1487,7 @@
                         <span class="count-badge">
                             {{ filteredTransactions.length }} Transactions
                         </span>
-                        <button
-                            type="button"
-                            class="history-toggle-button"
+                        <button type="button" class="history-toggle-button"
                             [attr.aria-expanded]="transactionHistoryExpanded"
                             aria-controls="transaction-history-content"
                             [attr.aria-label]="transactionHistoryExpanded ? 'Hide transaction history' : 'Show transaction history'"
@@ -1548,217 +1560,217 @@
 
                     <div class="table-wrap" *ngIf="filteredTransactions.length > 0">
 
-                    <table class="data-table">
+                        <table class="data-table">
 
-                        <thead>
+                            <thead>
 
-                            <tr>
+                                <tr>
 
-                                <th>ID</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Balance After</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Balance After</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
 
-                            </tr>
+                                </tr>
 
-                        </thead>
+                            </thead>
 
 
-                        <tbody>
+                            <tbody>
 
-                            <tr *ngFor="
+                                <tr *ngFor="
                                     let transaction
                                     of filteredTransactions
                                 ">
 
-                                <td>
-                                    {{ transaction.id }}
-                                </td>
+                                    <td>
+                                        {{ transaction.id }}
+                                    </td>
 
 
-                                <td>
+                                    <td>
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'DEPOSIT'
                                         " class="transaction-badge deposit">
 
-                                        DEPOSIT
+                                            DEPOSIT
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'WITHDRAW'
                                         " class="transaction-badge withdraw">
 
-                                        WITHDRAW
+                                            WITHDRAW
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'FEE'
                                         " class="transaction-badge">
 
-                                        FEE
+                                            FEE
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'INTEREST'
                                         " class="transaction-badge deposit">
 
-                                        INTEREST
+                                            INTEREST
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'TRANSFER_OUT'
                                         " class="transaction-badge withdraw">
 
-                                        {{
-                                        getTransactionTypeLabel(
-                                        transaction
-                                        )
-                                        }}
+                                            {{
+                                            getTransactionTypeLabel(
+                                            transaction
+                                            )
+                                            }}
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.transactionType
                                             === 'TRANSFER_IN'
                                         " class="transaction-badge deposit">
 
-                                        {{
-                                        getTransactionTypeLabel(
-                                        transaction
-                                        )
-                                        }}
+                                            {{
+                                            getTransactionTypeLabel(
+                                            transaction
+                                            )
+                                            }}
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             transaction.reversalOfTransactionId
                                             !== null
                                         " class="transaction-badge reversal">
 
-                                        REVERSAL
+                                            REVERSAL
 
-                                    </span>
+                                        </span>
 
-                                </td>
-
-
-                                <td>
-
-                                    {{
-                                    transaction.amount
-                                    | number:'1.2-2'
-                                    }}
-
-                                </td>
+                                    </td>
 
 
-                                <td>
+                                    <td>
 
-                                    {{
-                                    transaction.balanceAfter
-                                    | number:'1.2-2'
-                                    }}
+                                        {{
+                                        transaction.amount
+                                        | number:'1.2-2'
+                                        }}
 
-                                </td>
-
-
-                                <td>
-
-                                    {{
-                                    transaction.createdOn
-                                    | date:'yyyy-MM-dd HH:mm'
-                                    }}
-
-                                </td>
+                                    </td>
 
 
-                                <td>
+                                    <td>
 
-                                    <span *ngIf="transaction.reversed" class="status-badge reversed">
+                                        {{
+                                        transaction.balanceAfter
+                                        | number:'1.2-2'
+                                        }}
 
-                                        REVERSED
-
-                                    </span>
+                                    </td>
 
 
-                                    <span *ngIf="
+                                    <td>
+
+                                        {{
+                                        transaction.createdOn
+                                        | date:'yyyy-MM-dd HH:mm'
+                                        }}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span *ngIf="transaction.reversed" class="status-badge reversed">
+
+                                            REVERSED
+
+                                        </span>
+
+
+                                        <span *ngIf="
                                             !transaction.reversed &&
                                             transaction.reversalOfTransactionId
                                             === null
                                         " class="status-badge completed">
 
-                                        COMPLETED
+                                            COMPLETED
 
-                                    </span>
+                                        </span>
 
-                                </td>
-
-
-                                <td>
-
-                                    <span *ngIf="transaction.reversed" class="reversed-text">
-
-                                        Reversed
-
-                                    </span>
+                                    </td>
 
 
-                                    <button *ngIf="
+                                    <td>
+
+                                        <span *ngIf="transaction.reversed" class="reversed-text">
+
+                                            Reversed
+
+                                        </span>
+
+
+                                        <button *ngIf="
                                             !transaction.reversed &&
                                             transaction.reversalOfTransactionId
                                             === null &&
                                             canUndo(transaction)
                                         " type="button" class="undo-button" [disabled]="processing"
-                                        (click)="undoTransaction(transaction)">
+                                            (click)="undoTransaction(transaction)">
 
-                                        {{
-                                        processing
-                                        ? 'Undoing...'
-                                        : 'Undo'
-                                        }}
+                                            {{
+                                            processing
+                                            ? 'Undoing...'
+                                            : 'Undo'
+                                            }}
 
-                                    </button>
+                                        </button>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             !transaction.reversed &&
                                             transaction.reversalOfTransactionId
                                             === null &&
                                             !canUndo(transaction)
                                         " class="not-available">
 
-                                        —
+                                            —
 
-                                    </span>
+                                        </span>
 
-                                </td>
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                        </tbody>
+                            </tbody>
 
-                    </table>
+                        </table>
 
-                </div>
+                    </div>
 
                 </div>
 
@@ -1791,10 +1803,7 @@
                         <span class="count-badge">
                             {{ audits.length }} Events
                         </span>
-                        <button
-                            type="button"
-                            class="history-toggle-button"
-                            [attr.aria-expanded]="auditHistoryExpanded"
+                        <button type="button" class="history-toggle-button" [attr.aria-expanded]="auditHistoryExpanded"
                             aria-controls="audit-history-content"
                             [attr.aria-label]="auditHistoryExpanded ? 'Hide audit history' : 'Show audit history'"
                             (click)="auditHistoryExpanded = !auditHistoryExpanded">
@@ -1840,114 +1849,114 @@
                         audits.length > 0
                     ">
 
-                    <table class="data-table audit-table">
+                        <table class="data-table audit-table">
 
-                        <thead>
+                            <thead>
 
-                            <tr>
+                                <tr>
 
-                                <th>
-                                    Date
-                                </th>
+                                    <th>
+                                        Date
+                                    </th>
 
-                                <th>
-                                    Event
-                                </th>
+                                    <th>
+                                        Event
+                                    </th>
 
-                                <th>
-                                    Summary
-                                </th>
+                                    <th>
+                                        Summary
+                                    </th>
 
-                                <th>
-                                    Amount
-                                </th>
+                                    <th>
+                                        Amount
+                                    </th>
 
-                                <th>
-                                    Performed By
-                                </th>
+                                    <th>
+                                        Performed By
+                                    </th>
 
-                            </tr>
+                                </tr>
 
-                        </thead>
-
-
-                        <tbody>
-
-                            <tr *ngFor="let audit of audits">
-
-                                <!-- Date -->
-                                <td>
-
-                                    {{
-                                    audit.performedOn
-                                    | date:'yyyy-MM-dd HH:mm'
-                                    }}
-
-                                </td>
+                            </thead>
 
 
-                                <!-- Event -->
-                                <td>
+                            <tbody>
 
-                                    <span class="audit-event-badge" [ngClass]="getAuditEventClass(audit.eventType)">
+                                <tr *ngFor="let audit of audits">
 
-                                        {{ audit.eventType }}
+                                    <!-- Date -->
+                                    <td>
 
-                                    </span>
+                                        {{
+                                        audit.performedOn
+                                        | date:'yyyy-MM-dd HH:mm'
+                                        }}
 
-                                </td>
-
-
-                                <!-- Summary -->
-                                <td class="audit-summary">
-
-                                    {{ audit.summary }}
-
-                                </td>
+                                    </td>
 
 
-                                <!-- Amount -->
-                                <td>
+                                    <!-- Event -->
+                                    <td>
 
-                                    <span *ngIf="
+                                        <span class="audit-event-badge" [ngClass]="getAuditEventClass(audit.eventType)">
+
+                                            {{ audit.eventType }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- Summary -->
+                                    <td class="audit-summary">
+
+                                        {{ audit.summary }}
+
+                                    </td>
+
+
+                                    <!-- Amount -->
+                                    <td>
+
+                                        <span *ngIf="
                                             audit.amount !== null &&
                                             audit.amount !== undefined
                                         ">
 
-                                        {{
-                                        audit.amount
-                                        | number:'1.2-2'
-                                        }}
+                                            {{
+                                            audit.amount
+                                            | number:'1.2-2'
+                                            }}
 
-                                        MMK
+                                            MMK
 
-                                    </span>
+                                        </span>
 
 
-                                    <span *ngIf="
+                                        <span *ngIf="
                                             audit.amount === null ||
                                             audit.amount === undefined
                                         " class="not-available">
 
-                                        —
+                                            —
 
-                                    </span>
+                                        </span>
 
-                                </td>
+                                    </td>
 
 
-                                <!-- Performed By -->
-                                <td>
+                                    <!-- Performed By -->
+                                    <td>
 
-                                    {{ audit.performedBy }}
+                                        {{ audit.performedBy }}
 
-                                </td>
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                        </tbody>
+                            </tbody>
 
-                    </table>
+                        </table>
 
                     </div>
 

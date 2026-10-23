@@ -869,7 +869,7 @@
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(2, minmax(0, 326px));
 
     gap: 0.75rem;
 }
@@ -884,15 +884,26 @@
 .action-card {
     min-width: 0;
 
-    padding: 1rem;
+    padding: 1.1rem;
 
     border: 1px solid var(--line);
-    border-radius: 5px;
+    border-radius: 8px;
 
     background: #fff;
 
     box-shadow:
-        0 2px 8px rgba(24, 55, 45, 0.035);
+        0 3px 12px rgba(24, 55, 45, 0.055);
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.action-grid>.action-card:hover {
+    border-color: #c5d9d1;
+    box-shadow: 0 7px 18px rgba(24, 55, 45, 0.09);
+    transform: translateY(-2px);
 }
 
 
@@ -907,9 +918,9 @@
 
 
 .action-card p {
-    min-height: 38px;
+    min-height: 24px;
 
-    margin: 0.5rem 0 0.8rem;
+    margin: 0.45rem 0 1rem;
 
     color: var(--muted);
 
@@ -1042,6 +1053,179 @@
 .action-grid>.action-card>.action-button,
 .action-grid>.action-card>.close-button {
     margin-top: auto;
+}
+
+.money-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 46px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(20, 70, 55, 0.12);
+    transition:
+        background-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.money-action-button:hover:not(:disabled) {
+    box-shadow: 0 4px 10px rgba(20, 70, 55, 0.2);
+    transform: translateY(-1px);
+}
+
+.money-action-button:focus-visible {
+    outline: 3px solid rgba(36, 116, 94, 0.28);
+    outline-offset: 2px;
+}
+
+.money-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.deposit-action-button {
+    background: #24745e;
+}
+
+.deposit-action-button:hover:not(:disabled) {
+    background: #1d624f;
+}
+
+.withdraw-action-button {
+    background: #245b50;
+}
+
+.withdraw-action-button:hover:not(:disabled) {
+    background: #19483f;
+}
+
+.closure-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(24, 55, 45, 0.035);
+}
+
+.closure-description,
+.closure-preview-status,
+.closure-maker-checker {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.closure-preview-status strong {
+    color: #a33b3b;
+}
+
+.closure-preview-status strong.closure-ready {
+    color: var(--accent-dark);
+}
+
+.closure-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
+.closure-refresh-button {
+    align-self: flex-start;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+.closure-blockers,
+.closure-warnings {
+    padding: 0.55rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.closure-blockers {
+    border: 1px solid #f3c2be;
+    background: #fffafa;
+    color: #a33b3b;
+}
+
+.closure-warnings {
+    border: 1px solid #e8dcae;
+    background: #fffdf3;
+    color: #735d15;
+}
+
+.closure-blockers ul,
+.closure-warnings ul {
+    margin: 0.3rem 0 0;
+    padding-left: 1.2rem;
+}
+
+.closure-destination {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.closure-destination select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid #cbd8d2;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.closure-message {
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.closure-message.error {
+    border: 1px solid #f3c2be;
+    background: #fff1f0;
+    color: #b61d1d;
+}
+
+.closure-message.success {
+    border: 1px solid #bfe7cf;
+    background: #ebf8f1;
+    color: #1b6a46;
 }
 
 
@@ -3080,6 +3264,118 @@
         min-height: 120px;
     }
 }
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+.action-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #d8e3df;
+    border-radius: 8px;
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+.action-header h3 {
+    margin: 0;
+    color: #173c32;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.action-card p {
+    margin: 0;
+    min-height: 20px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.action-card input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #cbd9d3;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #1f2937;
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.action-card input:focus {
+    outline: none;
+    border-color: #247861;
+    box-shadow: 0 0 0 3px rgb(36 120 97 / 12%);
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+}
+
+.deposit-action-button {
+    background: #23765f;
+}
+
+.deposit-action-button:hover:not(:disabled) {
+    background: #195e4b;
+}
+
+.withdraw-action-button {
+    background: #344b60;
+}
+
+.withdraw-action-button:hover:not(:disabled) {
+    background: #26394a;
+}
+
+.action-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.withdraw-form-error {
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 5px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 
 /* =========================================================

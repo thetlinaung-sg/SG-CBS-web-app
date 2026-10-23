@@ -16,6 +16,29 @@ interface SavingsAccount {
   activatedOn?: string;
 }
 
+interface SavingsAccountClosePreview {
+  accountId: number;
+  canClose: boolean;
+  status: string;
+  balance: number;
+  availableBalance: number;
+  closureFeeAmount: number;
+  residualAmount: number;
+  closureFeeAlreadyCharged: boolean;
+  requiresMakerChecker: boolean;
+  blockers: string[];
+  warnings: string[];
+  destinationAccounts: SavingsAccount[];
+}
+
+interface SavingsAccountClosureResult {
+  status: 'CLOSED' | 'PENDING_APPROVAL';
+  account: SavingsAccount;
+  pendingRequestId: number | null;
+  closureFeeAmount: number;
+  residualTransferAmount: number;
+}
+
 interface PendingMakerCheckerRequest {
   id: number;
   savingsAccountId: number;
@@ -123,6 +146,11 @@ interface SavingsStandingInstructionBatch {
 export class SavingsAccountDetailComponent implements OnInit {
 
   account: SavingsAccount | null = null;
+  closurePreview: SavingsAccountClosePreview | null = null;
+  selectedClosureDestinationAccountId: number | null = null;
+  closurePreviewLoading = false;
+  closureErrorMessage = '';
+  closureSuccessMessage = '';
 
   transactions: SavingsTransaction[] = [];
   transactionHistoryExpanded = true;
@@ -301,6 +329,7 @@ export class SavingsAccountDetailComponent implements OnInit {
         this.account = data;
 
         this.loading = false;
+        this.refreshClosurePreview(data.id);
 
         /*
          * Load Audit History.
@@ -2468,72 +2497,90 @@ export class SavingsAccountDetailComponent implements OnInit {
     });
   }
 
-  /**
-   * ACTIVE -> CLOSED.
-   */
-  closeAccount(): void {
-
-    if (!this.account) {
+  refreshClosurePreview(accountId = this.account?.id): void {
+    if (!accountId) {
       return;
     }
 
-    this.clearMessages();
+    this.closurePreviewLoading = true;
+    this.closureErrorMessage = '';
+    this.http.get<SavingsAccountClosePreview>(
+      `${this.apiBase}/savingsaccounts/${accountId}/close-preview`,
+      { headers: this.getAuthHeaders() }
+    ).subscribe({
+      next: (preview) => {
+        this.closurePreview = preview;
+        const selectedIsAvailable = preview.destinationAccounts.some(
+          destination => destination.id === this.selectedClosureDestinationAccountId
+        );
+        if (!selectedIsAvailable) {
+          this.selectedClosureDestinationAccountId =
+            preview.destinationAccounts[0]?.id ?? null;
+        }
+        this.closurePreviewLoading = false;
+      },
+      error: (error) => {
+        console.error('Unable to load close preview:', error);
+        this.closureErrorMessage =
+          error?.error?.message || 'Unable to load close preview.';
+        this.closurePreviewLoading = false;
+      }
+    });
+  }
+
+  closeAndSettle(): void {
+    if (!this.account || !this.closurePreview?.canClose) {
+      return;
+    }
 
     if (
-      this.account.status !== 'ACTIVE'
+      this.closurePreview.residualAmount > 0
+      && this.selectedClosureDestinationAccountId === null
     ) {
-
-      this.errorMessage =
-        'Only ACTIVE savings accounts can be closed.';
-
+      this.closureErrorMessage = 'Select a destination account for the residual balance.';
       return;
     }
 
     const confirmed = confirm(
-      'Are you sure you want to close this savings account?'
+      `Confirm close & settle? Closure fee: ${this.closurePreview.closureFeeAmount}. `
+      + `Residual transfer: ${this.closurePreview.residualAmount}.`
     );
-
     if (!confirmed) {
       return;
     }
 
     this.processing = true;
-
-    this.http.post<SavingsAccount>(
-      `${this.apiBase}/savingsaccounts/${this.account.id}/close`,
-      {},
-      {
-        headers:
-          this.getAuthHeaders()
-      }
+    this.closureErrorMessage = '';
+    this.closureSuccessMessage = '';
+    this.http.post<SavingsAccountClosureResult>(
+      `${this.apiBase}/savingsaccounts/${this.account.id}/close-and-settle`,
+      { destinationAccountId: this.selectedClosureDestinationAccountId },
+      { headers: this.getAuthHeaders() }
     ).subscribe({
-
-      next: (data) => {
-
-        this.account = data;
-
-        this.successMessage =
-          'Savings account closed successfully.';
-
+      next: (result) => {
+        this.account = result.account;
         this.processing = false;
 
-        this.transferAccounts = [];
+        if (result.status === 'PENDING_APPROVAL') {
+          this.closureSuccessMessage =
+            `Residual transfer submitted for maker-checker approval (request #${result.pendingRequestId}). `
+            + 'After approval, refresh the preview and confirm close & settle again.';
+        } else {
+          this.closureSuccessMessage = 'Savings account closed and settled successfully.';
+          this.transferAccounts = [];
+          this.selectedDestinationAccountId = null;
+        }
 
-        this.selectedDestinationAccountId =
-          null;
-
-        this.loadAudits(data.id);
+        this.loadTransactions(result.account.id);
+        this.loadAudits(result.account.id);
+        this.refreshClosurePreview(result.account.id);
       },
-
       error: (error) => {
-
-        console.error(error);
-
-        this.errorMessage =
-          error?.error?.message ||
-          'Unable to close savings account.';
-
+        console.error('Unable to close and settle savings account:', error);
+        this.closureErrorMessage =
+          error?.error?.message || 'Unable to close and settle savings account.';
         this.processing = false;
+        this.refreshClosurePreview();
       }
     });
   }

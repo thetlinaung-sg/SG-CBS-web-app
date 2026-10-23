@@ -52,6 +52,11 @@ export class CreateSavingsProductComponent {
             [Validators.required, Validators.min(0)]
         ],
 
+        closureFeeAmount: [
+            0,
+            [Validators.required, Validators.min(0)]
+        ],
+
         status: [
             'ACTIVE',
             Validators.required
